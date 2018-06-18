@@ -1,20 +1,21 @@
 \documentclass{beamer}
 \usepackage{pgfpages}
 \usepackage{hyperref}
+\usepackage[
+backend=biber,
+style=alphabetic,
+citestyle=authoryear
+]{biblatex}
 
-%\setbeameroption{show only notes}
+\addbibresource{library.bib}
+
+% \setbeameroption{show only notes}
 \usetheme{material}
 
 % \usePrimary{00897B}{00695C}{FFFFFF}
 \usePrimaryTeal
 % \useAccent{009688}{000000}
 \useAccent{004D40}{000000}
-
-\definecolor{box1}{HTML}{42a5f5}
-\definecolor{box2}{HTML}{26a69a}
-\definecolor{box3}{HTML}{d4e157}
-\definecolor{box4}{HTML}{ffa726}
-\definecolor{box5}{HTML}{8d6e63}
 
 \title{Core techniques of \\ \textbf{QA Systems over KBs \\ a Survey}}
 \author{Guillermo Echegoyen Blanco}
@@ -67,6 +68,20 @@
 \end{frame}
 \end{comment}
 
+\begin{frame}{Intro}
+  \begin{card}
+    \begin{itemize}
+      \item A Question Answering System should be able to: \\
+      \textit{Understand a Natural Language Question so as to be able to answer based on some pre-known data.}
+    \end{itemize}
+  \end{card}
+  \begin{card}
+    \begin{itemize}
+      \item Typically involves accepting a question and generating a SparQL query capable of extracting the information which answers the user question.
+    \end{itemize}
+  \end{card}
+\end{frame}
+
 \begin{frame}{Tasks}
   \begin{card}
     \begin{itemize}
@@ -79,9 +94,63 @@
   \end{card}
 \end{frame}
 
-
-\begin{frame}{Question Analysis}
+\begin{frame}{Question Analysis \#1}
+  \begin{card}
+    Analyze syntactic features to extract meaningful information:
+    \begin{itemize}
+      \item Type of question (is it a Which, What\dots question).
+      \item Multilinguality (is it in English, French\dots).
+      \item Correspondance to KB entities/classes.
+      \item Tokens in the sentence and it's relations.
+      \item Useless words in the sentence.
+    \end{itemize}
+  \end{card}
 \end{frame}
+
+\begin{frame}{Question Analysis \#2}
+  \begin{card}
+    Techniques based on:
+    \begin{itemize}
+      \item Recognizing Named Entities
+      \item Segmenting with $POS^{*}$ Tags
+      \item Identifying dependencies using parsers
+    \end{itemize}
+  \end{card}
+  \vspace{8em}
+  POS Tag: Part-Of-Speech Tag
+\end{frame}
+
+\note[itemize]{
+  % ToDo := Correct this notes
+  \item Recognizing Named Entities consists in finding the entities corresponding to parts of the phrase (eg: Europe dbr:European\_Union):Which token correspond to which resource in the KB
+  \item Segmenting is like tokenization of different parts of the string, where the tag is usually universal
+  \item Dependencies refer to parts of the phrase which depend upon others, direct cumpliment, adjective, subjective noun\dots
+}
+
+\begin{frame}{Question Analysis \#3 - Recognizing named entities}
+  \begin{card}
+    Identify Named Entities and map to resource in KB
+    \begin{itemize}
+      \item \textbf{\textit{NER} Tools}: Tools from NLP, \textbf{\textit{Standford NER Tool}}. Domain specific, low precision 51\% (\cite{he2014a})
+      \item \textbf{\textit{N-Gram}}: Map n-grams to KB entities. Adv: Each NE can be recognized in the KB. Disadv: Dissambiguation explodes (too much candidates). (SINA: \cite{shekarpour2015a}, CASIA: \cite{he2014a})
+      \item \textbf{\textit{Entity Linking} Tools}: \textbf{DBpedia Spotlight} (\cite{daiber2013a}) and \textbf{AIDA} (\cite{yosef2011a}). Recognize NE and find the underlying KB resource, dissambiguating on the way. Adv: All-in-one. Disadv: Limited service, KB dependant.
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  Identify tokens in the sentence that refer to a resource in the KB, discarding useless words.
+  \begin{itemize}
+    \item When grouping n-grams, if an entity is found, the n-gram is considered, else more n-grams are tried.
+  \end{itemize}
+}
+
+\begin{frame}{Question Analysis \#4 - Segmenting using POS Tagging}
+  \begin{card}
+    Identify which phrase correspond to instances, properties, classes\dots and which is irrelevant.
+  \end{card}
+\end{frame}
+
 \begin{frame}{Phrase Mapping}
 \end{frame}
 \begin{frame}{Disambiguation}
@@ -91,6 +160,9 @@
 \begin{frame}{Distributed Knowledge}
 \end{frame}
 
+\begin{frame}{Bibliography}
+  \printbibliography
+\end{frame}
 % ToDo := Bibliography
 
 \end{document}
