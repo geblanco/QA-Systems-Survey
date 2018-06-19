@@ -69,17 +69,24 @@ citestyle=authoryear
 \end{comment}
 
 \begin{frame}{Intro}
-  \begin{card}
+  \begin{cardTiny}
     \begin{itemize}
       \item A Question Answering System should be able to: \\
       \textit{Understand a Natural Language Question so as to be able to answer based on some pre-known data.}
     \end{itemize}
-  \end{card}
-  \begin{card}
+  \end{cardTiny}
+  \begin{cardTiny}
     \begin{itemize}
       \item Typically involves accepting a question and generating a SparQL query capable of extracting the information which answers the user question.
     \end{itemize}
-  \end{card}
+  \end{cardTiny}
+  \begin{cardTiny}
+    \begin{itemize}
+      \item QALD benchmark
+      \item WebQuestions benchmark
+      \item SimpleQuestions benchmark
+    \end{itemize}
+  \end{cardTiny}
 \end{frame}
 
 \begin{frame}{Tasks}
@@ -94,6 +101,7 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+% ToDo := Describe the problems here
 \begin{frame}{Question Analysis \#1}
   \begin{card}
     Analyze syntactic features to extract meaningful information:
@@ -131,9 +139,9 @@ citestyle=authoryear
   \begin{card}
     Identify Named Entities and map to resource in KB
     \begin{itemize}
-      \item \textbf{\textit{NER} Tools}: Tools from NLP, \textbf{\textit{Standford NER Tool}}. Domain specific, low precision 51\% (\cite{he2014a})
-      \item \textbf{\textit{N-Gram}}: Map n-grams to KB entities. Adv: Each NE can be recognized in the KB. Disadv: Dissambiguation explodes (too much candidates). (SINA: \cite{shekarpour2015a}, CASIA: \cite{he2014a})
-      \item \textbf{\textit{Entity Linking} Tools}: \textbf{DBpedia Spotlight} (\cite{daiber2013a}) and \textbf{AIDA} (\cite{yosef2011a}). Recognize NE and find the underlying KB resource, dissambiguating on the way. Adv: All-in-one. Disadv: Limited service, KB dependant.
+      \item \textit{NER} Tools: Tools from NLP, \textbf{\textit{Standford NER Tool}}. Domain specific, \textbf{low precision 51\%} (\cite{he2014a})
+      \item \textit{N-Gram}: Map n-grams to KB entities. Adv: Each NE can be recognized in the KB, disadv: Dissambiguation explodes (\textbf{too much candidates}). (SINA: \cite{shekarpour2015a}, CASIA: \cite{he2014a})
+      \item \textit{Entity Linking} Tools: \textbf{DBpedia Spotlight} (\cite{daiber2013a}) and \textbf{AIDA} (\cite{yosef2011a}). Recognize NE and find the underlying KB resource, dissambiguating on the way. Adv: All-in-one. Disadv: Limited service, \textbf{KB dependant}.
     \end{itemize}
   \end{card}
 \end{frame}
@@ -143,16 +151,81 @@ citestyle=authoryear
   \begin{itemize}
     \item When grouping n-grams, if an entity is found, the n-gram is considered, else more n-grams are tried.
   \end{itemize}
+  Propose n-grams with attention mechanism?
 }
 
 \begin{frame}{Question Analysis \#4 - Segmenting using POS Tagging}
   \begin{card}
     Identify which phrase correspond to instances, properties, classes\dots and which is irrelevant.
+    \begin{itemize}
+      \item \textit{Handmade rules}: Regular expressions depenending on question type, structure\dots. (PowerAqua \cite{lopez2012a}, Treo \cite{freitas2014a}, DEANNA \cite{yahya2013a}). Disadv: \textbf{regex built by hand}.
+      \item \textit{Learning rules}: \textbf{Machine Learning} approach, train over corpus (Xser \cite{xu2014a}, UTQA \cite{pouran2016a}). Disadv: \textbf{training corpus needed}.
+    \end{itemize}
   \end{card}
 \end{frame}
 
-\begin{frame}{Phrase Mapping}
+\note{
+  It is not clear how to identify the relation between different chunks of a question
+}
+
+\begin{frame}{Question Analysis \#5 - Parsers}
+  \begin{card}
+    Grammar based parsers to generate trees or DAGs
+    \begin{itemize}
+      \item \textit{Dependency grammars}: \textbf{Standford dependency parser}, word dependencies. Adv: can extract relations along with it's arguments (gAnswer \cite{zou2014a}, \textbf{PATTY} \cite{nakashole2012a})
+      \item \textit{Dependencies and DAGs}: Dependencies between phrases. Disadv: \textbf{parser trained on dataset} (Xser \cite{xu2014a}).
+    \end{itemize}
+  \end{card}
 \end{frame}
+
+\note{
+  DAG based parser operates on a phrase level, dependency grammars on a word level.
+}
+
+\begin{frame}{Question Analysis \#6 - Summary}
+  \begin{card}[Which techniques to choose?]
+    \begin{itemize}
+      \item Xser (\textbf{trained DAG}) reports best results on \textit{QALD 4.1 \& 5}
+      \item gAnswer (\textbf{Dependency grammars}) reports fastest results on \textit{QALD 3 \& 4}
+    \end{itemize}
+
+    Machine Learning approach: Can be fast enough and there is plenty of data available.
+  \end{card}
+\end{frame}
+
+% ToDo := Add the problems here
+\begin{frame}{Phrase Mapping \#1}
+  \begin{card}
+    Find the resources in the KB with the highest probability that maps to the phrase.
+  \end{card}
+  \begin{card}
+    Problems:
+    \begin{itemize}
+      \item String similarity
+      \item Semantic similarity
+      \item Language
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  String similarity: very similar words, different meaning (which, witch)
+  Semantic similarity: words with related semantic meaning but different writing (king, queen)
+}
+
+\begin{frame}{Phrase Mapping \#2}
+  \begin{card}
+    \begin{itemize}
+      \item Database with lexicalization: \textit{WordNet, Wiktionary, PATTY} Expand the phrase with synonims and use that for search. Adv: High number of candidates, disadv: \textbf{Big search space}, \textbf{not very useful for domain specific mappings}.
+      \item Mappings using large texts: \textbf{word2vec} semantics reflected in the associated vector. Adv: aids in the \textbf{lexical gap}, disadv: \textbf{needs training on large texts, noisy, performance}.
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  PATTY is a database with relational lexicalization, uses pattern synsets (is album, [[num]] album by)
+}
+
 \begin{frame}{Disambiguation}
 \end{frame}
 \begin{frame}{Query Construction}
@@ -163,6 +236,5 @@ citestyle=authoryear
 \begin{frame}{Bibliography}
   \printbibliography
 \end{frame}
-% ToDo := Bibliography
 
 \end{document}
