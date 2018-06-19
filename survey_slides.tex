@@ -1,4 +1,6 @@
 \documentclass{beamer}
+
+\usepackage{graphicx}
 \usepackage{pgfpages}
 \usepackage{hyperref}
 \usepackage[
@@ -26,12 +28,16 @@ citestyle=authoryear
 \maketitle
 
 % ToDo := TOC
+% ToDO := Add SOTA for each Part
+% ToDo := In the graph, DAG perspective, add images and mention Zou's graph matching
+% ToDo := In Entity Linking add S-MART ?
 
-\begin{frame}{Summary}
+\begin{frame}{Overview}
   \begin{card}
-    Here goes the Summary
+    \tableofcontents
   \end{card}
 \end{frame}
+
 
 \begin{comment}
 \begin{frame}{Tasks}
@@ -68,6 +74,8 @@ citestyle=authoryear
 \end{frame}
 \end{comment}
 
+\section{Intro}
+
 \begin{frame}{Intro}
   \begin{cardTiny}
     \begin{itemize}
@@ -89,6 +97,8 @@ citestyle=authoryear
   \end{cardTiny}
 \end{frame}
 
+\section{Tasks}
+
 \begin{frame}{Tasks}
   \begin{card}
     \begin{itemize}
@@ -100,6 +110,8 @@ citestyle=authoryear
     \end{itemize}
   \end{card}
 \end{frame}
+
+\section{Question Analysis}
 
 % ToDo := Describe the problems here
 \begin{frame}{Question Analysis \#1}
@@ -141,7 +153,7 @@ citestyle=authoryear
     \begin{itemize}
       \item \textit{NER} Tools: Tools from NLP, \textbf{\textit{Standford NER Tool}}. Domain specific, \textbf{low precision 51\%} (\cite{he2014a})
       \item \textit{N-Gram}: Map n-grams to KB entities. Adv: Each NE can be recognized in the KB, disadv: Dissambiguation explodes (\textbf{too much candidates}). (SINA: \cite{shekarpour2015a}, CASIA: \cite{he2014a})
-      \item \textit{Entity Linking} Tools: \textbf{DBpedia Spotlight} (\cite{daiber2013a}) and \textbf{AIDA} (\cite{yosef2011a}). Recognize NE and find the underlying KB resource, dissambiguating on the way. Adv: All-in-one. Disadv: Limited service, \textbf{KB dependant}.
+      \item \textit{Entity Linking} Tools: \textbf{DBpedia Spotlight} (\cite{daiber2013a}), \textbf{DBpedia Lookup} and \textbf{AIDA} (\cite{yosef2011a}). Recognize NE and find the underlying KB resource, dissambiguating on the way. Adv: All-in-one. Disadv: Limited service, \textbf{KB dependant}.
     \end{itemize}
   \end{card}
 \end{frame}
@@ -193,6 +205,8 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\section{Phrase Mapping}
+
 % ToDo := Add the problems here
 \begin{frame}{Phrase Mapping \#1}
   \begin{card}
@@ -217,7 +231,7 @@ citestyle=authoryear
   \begin{card}
     \begin{itemize}
       \item Database with lexicalization: \textit{WordNet, Wiktionary, PATTY} Expand the phrase with synonims and use that for search. Adv: High number of candidates, disadv: \textbf{Big search space}, \textbf{not very useful for domain specific mappings}.
-      \item Mappings using large texts: \textbf{word2vec} semantics reflected in the associated vector. Adv: aids in the \textbf{lexical gap}, disadv: \textbf{needs training on large texts, noisy, performance}.
+      \item Mappings using large texts: \textbf{word2vec} semantics reflected in the associated vector. Adv: aids in \textbf{lexical gap, string similarity and semantic similarity}, disadv: \textbf{needs training on large texts, noisy, performance}.
     \end{itemize}
   \end{card}
 \end{frame}
@@ -226,15 +240,157 @@ citestyle=authoryear
   PATTY is a database with relational lexicalization, uses pattern synsets (is album, [[num]] album by)
 }
 
-\begin{frame}{Disambiguation}
+% ToDo := Speak about zou, phrase mapping with Subgraph matching, solves partially the Disambiguation
+\begin{frame}{Phrase Mapping \#3 - Summary}
+  \begin{card}[Which techniques to choose?]
+    ToDo
+  \end{card}
 \end{frame}
+
+\section{Dissambiguation}
+
+\begin{frame}{Disambiguation \#1}
+  \begin{card}
+    QA systems generate lots of possible interpretations due to language ambiguities and search process.
+    \begin{itemize}
+      \item Find univocally the resource that maps to the requested question.
+    \end{itemize}
+  \end{card}
+  \begin{card}
+    Typically approached:
+    \begin{itemize}
+      \item String or semantic similarity to resource label (include).
+      \item Consistency check between the properties and their arguments (exclude).
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  Local dissambiguation excluded, all systems do it. Example "Who is the director of The Lord Of the Rings?", with no information associated with the director resource, it is not possible.
+}
+
+\begin{frame}{Disambiguation \#2 - Graph Search}
+  \begin{card}
+    Dissambiguation carried out in the KB search step
+    \begin{itemize}
+      \item Subgraph matching against the KB (\textbf{gAnswer} \cite{zou2014a} does it on phrase mapping). Represent the question as a dependency graph and find an isomorfic subgraph in KB. Adv: very fast. Disadv: dissambiguation carries over. (\textbf{high precision, low recall})
+      \item Search both with edges and nodes (\textbf{PowerAqua} \cite{lopez2012a}). Disadv: slow.
+      \item \textbf{SemSek} \cite{aggarwal2012a} and \textbf{Treo} \cite{freitas2014a} do it only with recognized instances. (\textbf{low precision, high recall})
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  gAnswer uses scores each possible match proportionally to the distance between labels and resources, searches both in edges and nodes.
+
+  PowerAqua does a balance between recall and precision based on the question analysis.
+}
+
+\begin{frame}{Dissambiguation \#3 - Graph Search}
+  \begin{cardTiny}
+    \textbf{gAnswer} searches in the edges and vertices, \textbf{SemSek, Treo} search on instances and properties attached.
+    \begin{figure}\label{fig:subgraph}
+      \centering
+      \includegraphics[height=0.45\textheight]{./res/subgraph.png}
+      \caption{Subgraph generated for the question "Who is the wife of the president of the EU?"}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\begin{frame}{Dissambiguation \#4 - Hidden Markov Model (HMM)}
+  \begin{cardTiny}
+    \textit{"By which countries was the EU founded?"} \\
+    Two stochastic processes:
+    \begin{itemize}
+      \item \textbf{Hidden (dissambiguation) $X_{t \in N}$:} \{\textit{dbo:Country, dbr:Euro, dbr:European\_Union, dbp:founded, dbp:establishedEvent}\}.
+      \item \textbf{Observed (question tokens), $Y_{t \in N}$:} \{\textit{"countries", "EU", "founded"}\}.
+    \end{itemize}
+  \end{cardTiny}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:hmm}
+      \centering
+      \includegraphics[height=0.30\textheight]{./res/hmm.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{
+  This means that the appearance of a resource at time t depends only on the appearance of a resource at t -1
+}
+
+\begin{frame}{Dissambiguation \#5 - HMM}
+  \begin{card}
+    The problem is reduced to find the most probable set of states. Extra parameters:
+    \begin{itemize}
+      \item Initial probability $P(X_{0} = x)$ for $x \in X$
+      \item Transition probability $P(X_{t} = x_{1} | X_{t-1} = x_{2})$ for $x_{1}, x_{2} \in X$
+      \item Emission probability $P(Y_{t} = y | X_{t} = x)$ for $x \in X, y \in Y$
+    \end{itemize}
+    It is not necessary to know the the dependency between different resources, just the available resources.
+  \end{card}
+\end{frame}
+
+\begin{frame}{Disambiguation \#6 - HMM}
+  \begin{card}
+    SINA (\cite{shekarpour2015a}): \textbf{slow}
+    \begin{itemize}
+      \item Emission: string similarity between label and segment.
+      \item Initial \& Transition: estimated based on the distance of the resource in the KB and popularity.
+    \end{itemize}
+  \end{card}
+  \begin{card}
+    RTV (\cite{giannone2013a}): \textbf{inaccurate}
+    \begin{itemize}
+      \item Emission: word embeddings
+      \item Initial \& Transition: uniform across all resources
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Dissambiguation \#7 - ILP \& MLN}
+  \begin{card}
+    ILP Optimization problem
+    \begin{itemize}
+      \item \textbf{DEANNA} (\cite{yahya2013a}) Dependencies between the segments have to be computed in the question analysis phase. \textbf{slow, low precision \& recall}
+    \end{itemize}
+  \end{card}
+  \begin{card}
+    Markov Logic Network
+    \begin{itemize}
+      \item \textbf{CASIA} (\cite{he2014a}) Hard constraints like ILP, soft constraints flexibility \textbf{training needed low precision \& recall}
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Dissambiguation \#8 - Structured Perceptron}
+  \begin{card}
+    Considering:
+    \begin{itemize}
+      \item Similarity of the phrase and the corresponding resource
+      \item Popularity of a label for a resource
+      \item Compatibility of the range and domain of a property with the arguments.
+    \end{itemize}
+    \textbf{Xser} (\cite{xu2014a}) Solves ambiguity \textbf{fast, training needed}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Dissambiguation \#9 - Summary}
+  \begin{card}[Which techniques to choose]
+    ToDo
+  \end{card}
+\end{frame}
+
+\section{Query Construction}
+
 \begin{frame}{Query Construction}
 \end{frame}
 \begin{frame}{Distributed Knowledge}
 \end{frame}
 
-\begin{frame}{Bibliography}
-  \printbibliography
+\section{References}
+
+\begin{frame}[allowframebreaks]{References}
+    \printbibliography
 \end{frame}
 
 \end{document}
