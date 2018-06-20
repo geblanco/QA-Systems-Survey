@@ -106,7 +106,6 @@ citestyle=authoryear
       \item Phrase Mapping
       \item Disambiguation
       \item Query Construction
-      \item Distributed Knowledge
     \end{itemize}
   \end{card}
 \end{frame}
@@ -171,8 +170,25 @@ citestyle=authoryear
     Identify which phrase correspond to instances, properties, classes\dots and which is irrelevant.
     \begin{itemize}
       \item \textit{Handmade rules}: Regular expressions depenending on question type, structure\dots. (PowerAqua \cite{lopez2012a}, Treo \cite{freitas2014a}, DEANNA \cite{yahya2013a}). Disadv: \textbf{regex built by hand}.
+    \end{itemize}
+    \begin{figure}\label{fig:pos_tagging}
+      \centering
+      \includegraphics[width=0.8\textwidth]{./res/pos.png}
+      \caption{POS tagging from the \textbf{Standford POS Tagger}}
+    \end{figure}
+  \end{card}
+\end{frame}
+
+\begin{frame}{question Analysis \#5 - Segmenting using POS Tagging}
+  \begin{card}
+    \begin{itemize}
       \item \textit{Learning rules}: \textbf{Machine Learning} approach, train over corpus (Xser \cite{xu2014a}, UTQA \cite{pouran2016a}). Disadv: \textbf{training corpus needed}.
     \end{itemize}
+    \begin{figure}\label{fig:conll_tagging}
+      \centering
+      \includegraphics[width=0.9\textwidth]{./res/conll.png}
+      \caption{Question annonated with \textbf{CoNLL IOB format}}
+    \end{figure}
   \end{card}
 \end{frame}
 
@@ -180,7 +196,7 @@ citestyle=authoryear
   It is not clear how to identify the relation between different chunks of a question
 }
 
-\begin{frame}{Question Analysis \#5 - Parsers}
+\begin{frame}{Question Analysis \#6 - Parsers}
   \begin{card}
     Grammar based parsers to generate trees or DAGs
     \begin{itemize}
@@ -194,7 +210,7 @@ citestyle=authoryear
   DAG based parser operates on a phrase level, dependency grammars on a word level.
 }
 
-\begin{frame}{Question Analysis \#6 - Summary}
+\begin{frame}{Question Analysis \#7 - Summary}
   \begin{card}[Which techniques to choose?]
     \begin{itemize}
       \item Xser (\textbf{trained DAG}) reports best results on \textit{QALD 4.1 \& 5}
@@ -273,7 +289,7 @@ citestyle=authoryear
   \begin{card}
     Dissambiguation carried out in the KB search step
     \begin{itemize}
-      \item Subgraph matching against the KB (\textbf{gAnswer} \cite{zou2014a} does it on phrase mapping). Represent the question as a dependency graph and find an isomorfic subgraph in KB. Adv: very fast. Disadv: dissambiguation carries over. (\textbf{high precision, low recall})
+      \item Subgraph matching against the KB (\textbf{gAnswer} \cite{zou2014a} does it on phrase mapping). Represent the question as a dependency graph and find an isomorfic subgraph in KB\@. Adv: very fast. Disadv: dissambiguation carries over. (\textbf{high precision, low recall})
       \item Search both with edges and nodes (\textbf{PowerAqua} \cite{lopez2012a}). Disadv: slow.
       \item \textbf{SemSek} \cite{aggarwal2012a} and \textbf{Treo} \cite{freitas2014a} do it only with recognized instances. (\textbf{low precision, high recall})
     \end{itemize}
@@ -332,14 +348,14 @@ citestyle=authoryear
 
 \begin{frame}{Disambiguation \#6 - HMM}
   \begin{card}
-    SINA (\cite{shekarpour2015a}): \textbf{slow}
+    \textbf{SINA} (\cite{shekarpour2015a}): \textbf{slow}
     \begin{itemize}
       \item Emission: string similarity between label and segment.
       \item Initial \& Transition: estimated based on the distance of the resource in the KB and popularity.
     \end{itemize}
   \end{card}
   \begin{card}
-    RTV (\cite{giannone2013a}): \textbf{inaccurate}
+    \textbf{RTV} (\cite{giannone2013a}): \textbf{inaccurate}
     \begin{itemize}
       \item Emission: word embeddings
       \item Initial \& Transition: uniform across all resources
@@ -382,9 +398,157 @@ citestyle=authoryear
 
 \section{Query Construction}
 
-\begin{frame}{Query Construction}
+\begin{frame}{Query Construction \#1 - Issues}
+  \begin{cardTiny}
+    Construct a \textbf{SPARQL} query that reflects user question and gets the answer. \\
+    \textit{Semantic Gap}: Issues with how the information is encoded in the KB\@. One cannot deduce how the information is stored from the question.
+  \end{cardTiny}
+  \begin{cardTiny}
+    \textit{"Which countries are in the European Union?"} \\
+    Could be encoded as: \\
+    \textit{dbr:Greece dbp:member dbr:European\_Union} \\
+    \textit{dbr:France dbp:member dbr:European\_Union} \\
+    or as: \\
+    \textit{dbr:Greece dct:subj dbc:Member\_states\_of\_the\_European\_Union} \\
+    \textit{dbr:France dct:subj dbc:Member\_states\_of\_the\_European\_Union} \\
+    \textbf{How to search correctly}
+  \end{cardTiny}
 \end{frame}
-\begin{frame}{Distributed Knowledge}
+
+\begin{frame}{Query Construction \#2}
+  \begin{card}
+    Approaches:
+    \begin{itemize}
+      \item Using templates
+      \item Using information from the question analysis
+      \item Using Semantic Parsers
+      \item Using Machine Learning
+      \item Using semantic information
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#3 - Templates}
+  \begin{card}
+    Templates with parts of the query to be filled, in general by triples.
+    \begin{itemize}
+      \item \textbf{QAKiS} (\cite{cabrio2012a}) select queries with only one triple.
+      \item \textbf{ISOFT} (\cite{park2014a}) ASK over one triple, simple SELECT, COUNT and ORDER BY or FILTER.
+      \item \textbf{PowerAqua} (\cite{lopez2012a}) reduces the question to one or two triples ($<=$ predicates).
+    \end{itemize}
+    \textbf{Very restricted questions, language is too rich, disambiguity is key}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#4 - Question Analysis}
+  \begin{card}
+    Most systems get the form of the query in the question analysis and phrase mapping step.
+    \begin{itemize}
+      \item \textbf{Freya, Intui3} (\cite{dima2014a}) resources extracted in the phrase mapping step are combined into triples.
+      \item \textbf{DEANNA} (\cite{yahya2013a}) regex over POS tags in analysis step mapped to resources in phrase mapping step. ILP in dissambiguation step to get the triples.
+      \item \textbf{gAnswer, QAnswer, RTV, SemGraphQA} (\cite{zou2014a}, \cite{ruseti2015a}, \cite{giannone2013a}, \cite{beaumont2015a}) extract all the possible information from the dependency graph.
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{
+  \begin{itemize}
+    \item gAnswer: The graph takes the form of the final query, resources associated with nodes and edges are fetched from the KB and used in the query.
+    \item QAnswer: Scan dependency tree to find subgraph tokens corresponding to resouces, many graphs, local dissambiguation to get the best ones. Top ranked graph chosen for query.
+    \item RTV dependency graph -> ordered list of alternated properties and non properties. Resources searched and disambiguated with HMM. 
+  \end{itemize}
+  Special mention to Xser (best results), next slide
+}
+
+\begin{frame}{Query Construction \#5 - Question Analysis}
+  \begin{card}
+    \textbf{Xser} (\cite{xu2014a}) 3 ML algorithms, two KB independant (on the question analysis phase), one KB dependant (on dissambiguation step)
+    \begin{itemize}
+      \item First algorithm: determines segments of the question corresponding to variables, properties, instances and classes.
+      \item Second algorithm: find dependencies between phrases. (\textbf{Standford dependencies, PATTY})
+      \item Third algorithm: Dissambiguation with a \textbf{Structured Perceptron} 
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#6 - Question Analysis}
+  \begin{card}
+    The problem with these methods is that they all \textbf{assume} that \textbf{is possible to deduce the structure of the SPARQL query from the structure of the question} without knowing how the knowledge is encoded in the KB\@.
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#7 - Semantic Parsing}
+  \begin{card}
+    Compose a grammar and use it to extract structure from the query.
+    \begin{itemize}
+      \item \textbf{G}rammatical \textbf{F}ramework (\textbf{GFMed} \cite{marginean2017a})
+      \item \textbf{F}eature-based \textbf{C}ontext \textbf{F}ree \textbf{G}rammar (\textbf{TR Discover}, \cite{song2015a})
+      \item \textbf{C}ombinatorial \textbf{C}ategorial \textbf{G}rammar (\cite{hakimov2015a})
+      \item \textbf{L}exical \textbf{T}ree \textbf{A}djoint \textbf{G}rammar (\textbf{TBSL} \cite{unger2012a}, \textbf{BELA} \cite{walter2012a})
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#8 - Semantic Parsing}
+  \begin{cardTiny}
+    Question has to be well formulated. For each lexical item a corresponding semantic representation is needed. (ie \texit{married} has to map with \textit{dbo:spouse}). Learning corpus (\cite{hakimov2015a}) or from POS tags (\cite{unger2012a}). In general, \textbf{low recall}
+  \end{cardTiny}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:semantic_query}
+      \centering
+      \includegraphics[width=0.85\textwidth]{./res/semantic_query.png}
+      \caption{Semantic parsed question \textit{"Barack Obama is married to Michelle Obama"}}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\begin{frame}{Query Construction \#9 - Machine Learning}
+  \begin{card}
+    \textbf{CASIA} (\cite{he2014a}) (\textbf{low recall \& precision})
+    \begin{itemize}
+      \item Question Analysis step: extract features like position of a phrase and POS tags or the type of dependency in the dependency tree 
+      \item Phrase Mapping step: associate resources with phrase segments and extract more features
+      \item Dissambiguation step: MLN with extracted features to find most probable relation between segments and most probable mapping. \textbf{retrained for each KB}
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#10 - Semantic information}
+  \begin{card}
+    \textbf{SINA} (\cite{shekarpour2015a}), \textbf{POMELO} (\cite{hamon2014a}), \cite{zhang2016a} do not rely on the syntactic features of the question, instead the whole process is done based on the KB, just with semantic information. \\
+    Advantages:
+    \begin{itemize}
+      \item \textbf{high recall, \& precision}
+    \end{itemize}
+    Disadvantages:
+    \begin{itemize}
+      \item \textbf{computationally expensive}
+      \item \textbf{does not respect user question syntax}. No difference between \textit{"Who is the mother of Angela Merkel?"} and \textit{"Angela Merkel is the mother of who?"}
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\begin{frame}{Query Construction \#11 - Summary}
+  \begin{card}[Which techniques to choose?]
+  \end{card}
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}{Conclusions}
+\end{frame}
+
+\section{End}
+
+\begin{frame}{The End}
+  \begin{card}
+    \centering
+    \textbf{Thank you!}
+  \end{card}
+  \begin{card}
+    \centering
+    Questions?
+  \end{card}
 \end{frame}
 
 \section{References}
