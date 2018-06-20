@@ -11,7 +11,7 @@ citestyle=authoryear
 
 \addbibresource{library.bib}
 
-% \setbeameroption{show only notes}
+%\setbeameroption{show only notes}
 \usetheme{material}
 
 % \usePrimary{00897B}{00695C}{FFFFFF}
@@ -23,9 +23,15 @@ citestyle=authoryear
 \author{Guillermo Echegoyen Blanco}
 \date{}
 
+\setbeamertemplate{footline}{%
+\hfill\usebeamertemplate***{navigation symbols}
+\hspace{4em}\vspace{1em}\insertframenumber{}/\inserttotalframenumber}
+
 \begin{document}
 
 \maketitle
+
+\note{}
 
 % ToDo := TOC
 % ToDO := Add SOTA for each Part
@@ -38,6 +44,7 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
 
 \begin{comment}
 \begin{frame}{Tasks}
@@ -97,6 +104,11 @@ citestyle=authoryear
   \end{cardTiny}
 \end{frame}
 
+\note{%
+  Perspective taken by most of the QA Systems evaluated on QALD \\
+  Systems are tested like black boxes, so it is not clear enough with techniques work well on each part.
+}
+
 \section{Tasks}
 
 \begin{frame}{Tasks}
@@ -110,6 +122,8 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
+
 \section{Question Analysis}
 
 % ToDo := Describe the problems here
@@ -117,14 +131,21 @@ citestyle=authoryear
   \begin{card}
     Analyze syntactic features to extract meaningful information:
     \begin{itemize}
-      \item Type of question (is it a Which, What\dots question).
-      \item Multilinguality (is it in English, French\dots).
+      \item Type of question
+      \item Multilinguality
       \item Correspondance to KB entities/classes.
       \item Tokens in the sentence and it's relations.
       \item Useless words in the sentence.
     \end{itemize}
   \end{card}
 \end{frame}
+
+\note{%
+  \begin{itemize}
+    \item (is it a Which, What\dots question).
+    \item (is it in English, French\dots).
+  \end{itemize}
+}
 
 \begin{frame}{Question Analysis \#2}
   \begin{card}
@@ -139,7 +160,7 @@ citestyle=authoryear
   POS Tag: Part-Of-Speech Tag
 \end{frame}
 
-\note[itemize]{
+\note[itemize]{%
   % ToDo := Correct this notes
   \item Recognizing Named Entities consists in finding the entities corresponding to parts of the phrase (eg: Europe dbr:European\_Union):Which token correspond to which resource in the KB
   \item Segmenting is like tokenization of different parts of the string, where the tag is usually universal
@@ -157,7 +178,7 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
-\note{
+\note{%
   Identify tokens in the sentence that refer to a resource in the KB, discarding useless words.
   \begin{itemize}
     \item When grouping n-grams, if an entity is found, the n-gram is considered, else more n-grams are tried.
@@ -179,10 +200,14 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
-\begin{frame}{question Analysis \#5 - Segmenting using POS Tagging}
+\note{%
+  The general strategy with POS tags is to identify some reliable POS tags to recognize entities relations and classes. Regex over those POS tags
+}
+
+\begin{frame}{Question Analysis \#5 - Segmenting using POS Tagging}
   \begin{card}
     \begin{itemize}
-      \item \textit{Learning rules}: \textbf{Machine Learning} approach, train over corpus (Xser \cite{xu2014a}, UTQA \cite{pouran2016a}). Disadv: \textbf{training corpus needed}.
+      \item \textit{Learning rules}: \textbf{Machine Learning} approach, train over corpus (Xser \cite{xu2014a}, UTQA \cite{pouran2016a}, very good results). Disadv: \textbf{training corpus needed}.
     \end{itemize}
     \begin{figure}\label{fig:conll_tagging}
       \centering
@@ -192,34 +217,62 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
-\note{
-  It is not clear how to identify the relation between different chunks of a question
+\note{%
+  Combine POS tags, NER tags, no handmade rules
 }
 
 \begin{frame}{Question Analysis \#6 - Parsers}
-  \begin{card}
-    Grammar based parsers to generate trees or DAGs
-    \begin{itemize}
-      \item \textit{Dependency grammars}: \textbf{Standford dependency parser}, word dependencies. Adv: can extract relations along with it's arguments (gAnswer \cite{zou2014a}, \textbf{PATTY} \cite{nakashole2012a})
-      \item \textit{Dependencies and DAGs}: Dependencies between phrases. Disadv: \textbf{parser trained on dataset} (Xser \cite{xu2014a}).
-    \end{itemize}
-  \end{card}
+  \begin{cardTiny} 
+    \textit{Dependency grammars}: \textbf{Standford dependency parser}, word dependencies. Adv: can extract relations along with it's arguments (gAnswer \cite{zou2014a}, \textbf{PATTY} \cite{nakashole2012a})
+    \begin{figure}\label{fig:standford}
+      \centering
+      \includegraphics[height=0.57\textheight]{./res/standford.png}
+    \end{figure}
+  \end{cardTiny}
 \end{frame}
 
-\note{
-  DAG based parser operates on a phrase level, dependency grammars on a word level.
+\note{}
+
+\begin{frame}{Question Analysis \#7 - Parsers}
+  \begin{cardTiny}
+    \textit{Phrase Dependencies and DAGs}: Dependencies between phrases. SHIFT-REDUCED parser. Disadv: \textbf{parser trained on dataset} (Xser \cite{xu2014a}).
+    \begin{figure}\label{fig:standford_dag}
+      \centering
+      \includegraphics[width=0.99\textwidth]{./res/standford_dag.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{%
+  \begin{itemize}
+    \item DAG based parser operates on a phrase level, dependency grammars on a word level. 
+    \item DAG uses POS tags as features
+  \end{itemize}
 }
 
-\begin{frame}{Question Analysis \#7 - Summary}
+\begin{frame}{Question Analysis \#8 - Summary}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:qa_table}
+      \centering
+      \includegraphics[height=0.8\textheight]{./res/qa_table.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{}
+
+\begin{frame}{Question Analysis \#9 - Summary}
   \begin{card}[Which techniques to choose?]
     \begin{itemize}
       \item Xser (\textbf{trained DAG}) reports best results on \textit{QALD 4.1 \& 5}
       \item gAnswer (\textbf{Dependency grammars}) reports fastest results on \textit{QALD 3 \& 4}
+      \item UTQA (\textbf{Learned POS tags}) reports best results on \textit{QALD 6}
     \end{itemize}
-
     Machine Learning approach: Can be fast enough and there is plenty of data available.
   \end{card}
 \end{frame}
+
+\note{}
 
 \section{Phrase Mapping}
 
@@ -238,9 +291,13 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
-\note{
-  String similarity: very similar words, different meaning (which, witch)
-  Semantic similarity: words with related semantic meaning but different writing (king, queen)
+\note{%
+  \begin{itemize}
+    \item In this phase: consider the phrase mapping problem when s and label(r) have only a semantic relation 
+    \item String similarity: very similar words, different meaning (which, witch)
+    \item Semantic similarity: words with related semantic meaning but different writing (king, queen)
+    \item PATTY is used in Xser
+  \end{itemize}
 }
 
 \begin{frame}{Phrase Mapping \#2}
@@ -252,16 +309,66 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
-\note{
-  PATTY is a database with relational lexicalization, uses pattern synsets (is album, [[num]] album by)
+\note{%
+  \begin{itemize}
+    \item PATTY is a database with relational lexicalization, uses pattern synsets (is album, [[num]] album by)
+    \item A possible advantage of using PATTY is that response text could be "easily" constructed.
+  \end{itemize}
+}
+
+\begin{frame}{Phrase Mapping \#3}
+  \begin{card}
+    \begin{itemize}
+      \item KB Labels: Search in the labels provided by the KB's entitiy (all)
+      \item Redirects: Follow the \textit{owl:sameAs} links (gAnswer \cite{zou2014a})
+      \item Extracted knowledge: From the previous phase (gAnswer \cite{zou2014a}). Relations and arguments.
+      \item Wikipedia specific: \textbf{DBPedia Lookup}, \textbf{Wikimedia Miner Tool} (gAnswer \cite{zou2014a}, Xser \cite{xu2014a}, \cite{zhu-a})
+    \end{itemize}
+  \end{card}
+\end{frame}
+
+\note{%
+  Labels can be a powerful resource, smart indexing techniques can be used here (gAnswer)
+}
+
+\begin{frame}{Phrase Mapping \#4 - Summary}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:pm_table}
+      \centering
+      \includegraphics[height=0.8\textheight]{./res/pm_table.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{%
+  \begin{itemize}
+    \item Distributional semantics word2vec
+    \item Indexed labels: Lucene index
+  \end{itemize}
 }
 
 % ToDo := Speak about zou, phrase mapping with Subgraph matching, solves partially the Disambiguation
-\begin{frame}{Phrase Mapping \#3 - Summary}
+\begin{frame}{Phrase Mapping \#5 - Summary}
   \begin{card}[Which techniques to choose?]
-    ToDo
+    The best results here depend on the previous step and the computing resources available. \\
+    Options (can be combined together):
+    \begin{itemize}
+      \item KB's Labels
+      \item Redirects
+      \item word2vec
+      \item PATTY
+    \end{itemize}
   \end{card}
 \end{frame}
+
+\note{%
+  Mixed approach with all the possible methods??
+  Maximize:
+  \begin{itemize}
+    \item performance
+    \item KB independance
+  \end{itemize}
+}
 
 \section{Dissambiguation}
 
@@ -273,16 +380,20 @@ citestyle=authoryear
     \end{itemize}
   \end{card}
   \begin{card}
-    Typically approached:
+    Base approach (local dissambiguation):
     \begin{itemize}
-      \item String or semantic similarity to resource label (include).
-      \item Consistency check between the properties and their arguments (exclude).
+      \item String or semantic similarity to resource label.
+      \item Consistency check between the properties and their arguments.
     \end{itemize}
   \end{card}
 \end{frame}
 
-\note{
-  Local dissambiguation excluded, all systems do it. Example "Who is the director of The Lord Of the Rings?", with no information associated with the director resource, it is not possible.
+\note{%
+  \begin{itemize}
+    \item String or semantic similarity to resource: (include)
+    \item Consistency check between the properties and their arguments: (exclude).
+    \item Local dissambiguation excluded, all systems do it. Example "Who is the director of The Lord Of the Rings?", with no information associated with the director resource, it is not possible.
+  \end{itemize}
 }
 
 \begin{frame}{Disambiguation \#2 - Graph Search}
@@ -290,16 +401,18 @@ citestyle=authoryear
     Dissambiguation carried out in the KB search step
     \begin{itemize}
       \item Subgraph matching against the KB (\textbf{gAnswer} \cite{zou2014a} does it on phrase mapping). Represent the question as a dependency graph and find an isomorfic subgraph in KB\@. Adv: very fast. Disadv: dissambiguation carries over. (\textbf{high precision, low recall})
-      \item Search both with edges and nodes (\textbf{PowerAqua} \cite{lopez2012a}). Disadv: slow.
-      \item \textbf{SemSek} \cite{aggarwal2012a} and \textbf{Treo} \cite{freitas2014a} do it only with recognized instances. (\textbf{low precision, high recall})
+      \item \textbf{SemSek} \cite{aggarwal2012a} and \textbf{Treo} \cite{freitas2014a} do it only with recognized instances (during question analysis phase). (\textbf{low precision, high recall})
     \end{itemize}
+    Assume that all relational phrases can be deduced from the question.
   \end{card}
 \end{frame}
 
-\note{
-  gAnswer uses scores each possible match proportionally to the distance between labels and resources, searches both in edges and nodes.
-
-  PowerAqua does a balance between recall and precision based on the question analysis.
+\note{%
+  \begin{itemize}
+    \item gAnswer scores each possible match proportionally to the distance between labels and resources, searches both in edges and nodes.
+    \item PowerAqua explores only the most probable mappings, doing a balance between recall and precision based on the question analysis.
+    \item SemSek and Treo do not explore the relations, but the attached properties of the different interpretations on the KB found matches.
+  \end{itemize}
 }
 
 \begin{frame}{Dissambiguation \#3 - Graph Search}
@@ -312,6 +425,8 @@ citestyle=authoryear
     \end{figure}
   \end{cardTiny}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Dissambiguation \#4 - Hidden Markov Model (HMM)}
   \begin{cardTiny}
@@ -330,8 +445,11 @@ citestyle=authoryear
   \end{cardTiny}
 \end{frame}
 
-\note{
-  This means that the appearance of a resource at time t depends only on the appearance of a resource at t -1
+\note{%
+  \begin{itemize}
+    \item Assumption: This means that the appearance of a resource at time t depends only on the appearance of a resource at t -1
+    \item Random variables
+  \end{itemize}
 }
 
 \begin{frame}{Dissambiguation \#5 - HMM}
@@ -345,6 +463,8 @@ citestyle=authoryear
     It is not necessary to know the the dependency between different resources, just the available resources.
   \end{card}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Disambiguation \#6 - HMM}
   \begin{card}
@@ -363,6 +483,10 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{%
+  The slow part is the distance to the resource in KB (first approach), biiiig search space
+}
+
 \begin{frame}{Dissambiguation \#7 - ILP \& MLN}
   \begin{card}
     ILP Optimization problem
@@ -378,6 +502,23 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{%
+  Ambiguity during phrase mapping and segmentation \\
+  ILP: Dependencies between the segments have to be computed in the question analysis phase. \\
+  Boolean variables to indicate:
+  \begin{itemize}
+    \item if a segment of a question is chosen or not
+    \item if a resource corresponding to a segment is chosen 
+    \item if a segment corresponds to a property or an instance
+  \end{itemize}
+  Optimization function terms:
+  \begin{itemize}
+    \item Increase if the label of a rsource is similar to the corresponding segment
+    \item Increase if the two selected resources often occur in the same context
+    \item Maximize the number of selected segments.
+  \end{itemize}
+}
+
 \begin{frame}{Dissambiguation \#8 - Structured Perceptron}
   \begin{card}
     Considering:
@@ -390,11 +531,30 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
+
+\begin{frame}{Dissambiguation \#9 - Summary}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:diss_table}
+      \centering
+      \includegraphics[height=0.8\textheight]{./res/diss_table.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{}
+
 \begin{frame}{Dissambiguation \#9 - Summary}
   \begin{card}[Which techniques to choose]
-    ToDo
+    \begin{itemize}
+      \item Best results \textit{QALD 6}, reported from UTQA (\cite{pouran2016a}), whose method is unkown.
+      \item Fastest method is gAnser (\cite{zou2014a}) which dissambiguates in the phrase mapping step. (\textbf{subgraph matchin})
+      \item Best results in \textit{QALD 4.1 \& 5} by Xser (\cite{zou2014a}) which uses a (\textbf{Perceptron})
+    \end{itemize}
   \end{card}
 \end{frame}
+
+\note{}
 
 \section{Query Construction}
 
@@ -415,6 +575,8 @@ citestyle=authoryear
   \end{cardTiny}
 \end{frame}
 
+\note{}
+
 \begin{frame}{Query Construction \#2}
   \begin{card}
     Approaches:
@@ -428,17 +590,21 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
+
 \begin{frame}{Query Construction \#3 - Templates}
   \begin{card}
     Templates with parts of the query to be filled, in general by triples.
     \begin{itemize}
       \item \textbf{QAKiS} (\cite{cabrio2012a}) select queries with only one triple.
       \item \textbf{ISOFT} (\cite{park2014a}) ASK over one triple, simple SELECT, COUNT and ORDER BY or FILTER.
-      \item \textbf{PowerAqua} (\cite{lopez2012a}) reduces the question to one or two triples ($<=$ predicates).
+      \item \textbf{PowerAqua} (\cite{lopez2012a}) reduces the question to one or two triples ($<=2$ predicates).
     \end{itemize}
     \textbf{Very restricted questions, language is too rich, disambiguity is key}
   \end{card}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Query Construction \#4 - Question Analysis}
   \begin{card}
@@ -452,6 +618,7 @@ citestyle=authoryear
 \end{frame}
 
 \note{
+  Question analysis because is done in that step
   \begin{itemize}
     \item gAnswer: The graph takes the form of the final query, resources associated with nodes and edges are fetched from the KB and used in the query.
     \item QAnswer: Scan dependency tree to find subgraph tokens corresponding to resouces, many graphs, local dissambiguation to get the best ones. Top ranked graph chosen for query.
@@ -471,11 +638,15 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
+
 \begin{frame}{Query Construction \#6 - Question Analysis}
   \begin{card}
     The problem with these methods is that they all \textbf{assume} that \textbf{is possible to deduce the structure of the SPARQL query from the structure of the question} without knowing how the knowledge is encoded in the KB\@.
   \end{card}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Query Construction \#7 - Semantic Parsing}
   \begin{card}
@@ -488,6 +659,8 @@ citestyle=authoryear
     \end{itemize}
   \end{card}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Query Construction \#8 - Semantic Parsing}
   \begin{cardTiny}
@@ -502,6 +675,8 @@ citestyle=authoryear
   \end{cardTiny}
 \end{frame}
 
+\note{}
+
 \begin{frame}{Query Construction \#9 - Machine Learning}
   \begin{card}
     \textbf{CASIA} (\cite{he2014a}) (\textbf{low recall \& precision})
@@ -512,6 +687,8 @@ citestyle=authoryear
     \end{itemize}
   \end{card}
 \end{frame}
+
+\note{}
 
 \begin{frame}{Query Construction \#10 - Semantic information}
   \begin{card}
@@ -528,28 +705,52 @@ citestyle=authoryear
   \end{card}
 \end{frame}
 
+\note{}
+
 \begin{frame}{Query Construction \#11 - Summary}
+  \begin{cardTiny}
+    \begin{figure}\label{fig:qc_table}
+      \centering
+      \includegraphics[height=0.8\textheight]{./res/qc_table.png}
+    \end{figure}
+  \end{cardTiny}
+\end{frame}
+
+\note{}
+
+
+\begin{frame}{Query Construction \#12 - Summary}
   \begin{card}[Which techniques to choose?]
+    There is no clear way to do this. A good approach is to construct the query on the previous analysis steps, assuming structure can be extracted from the question.
   \end{card}
 \end{frame}
+
+\note{}
 
 \section{Conclusions}
 
 \begin{frame}{Conclusions}
+  \begin{card}
+    There exists many techniques for each part:
+    \begin{itemize}
+      \item Smart balance between different techniques lead to best results
+      \item Tendency goes to Machine Learning
+    \end{itemize}
+    When possible, maximize:
+    \begin{itemize}
+      \item KB independance (pluggability)
+      \item Performance (real time, scalability)
+      \item Extracted Knowledge (implicit, enriches the context/domain)
+    \end{itemize}
+  \end{card}
 \end{frame}
 
-\section{End}
-
-\begin{frame}{The End}
-  \begin{card}
-    \centering
-    \textbf{Thank you!}
-  \end{card}
-  \begin{card}
-    \centering
-    Questions?
-  \end{card}
-\end{frame}
+\note{%
+  \begin{itemize}
+    \item Data availability grows every day
+    \item Domain and context are key, big future for attention based mechanisms
+  \end{itemize}
+}
 
 \section{References}
 
